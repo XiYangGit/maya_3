@@ -1,0 +1,72 @@
+
+{ 
+global string $gMainWindow;
+    setParent $gMainWindow;
+    menu
+    -label "LSystemInstance"
+    -parent $gMainWindow
+    -tearOff on;
+    menuItem
+    -label "Random Node"
+    -command "randomnode";
+    menuItem
+    -label "Random Node(selected)"
+    -command "randomnode2";
+    menuItem
+    -label "LSystem Node"
+    -command "lsystemnode";
+    menuItem
+    -label "LSystem Node(selected)"
+    -command "lsystemnode2";
+}
+global proc randomnode()
+{
+polySphere -n "randsphere";
+instancer -n "randinsance";
+createNode randomNode -n "rand";
+connectAttr randsphere.matrix randinsance.inputHierarchy[0];
+connectAttr rand.randomPoint randinsance.inputPoints;
+}
+global proc randomnode2()
+{
+string $sel[] = `ls -sl`;
+string $obj;
+$obj=$sel[0];
+if(size($sel)==1){
+instancer -n "rd1";
+createNode randomNode -n "rd2";
+connectAttr ($obj+".matrix") rd1.inputHierarchy[0];
+connectAttr rd2.randomPoint rd1.inputPoints;}
+}
+global proc lsystemnode()
+{
+polyCube -n "lcube";
+instancer -n "lbranch";
+createNode LSystemNode -n "Lnode";
+connectAttr lcube.matrix lbranch.inputHierarchy[0];
+connectAttr Lnode.pt lbranch.inputPoints;
+
+polySphere -n "lsphere";
+instancer -n "lflower";
+connectAttr lsphere.matrix lflower.inputHierarchy[0];
+connectAttr Lnode.f lflower.inputPoints;
+}
+
+global proc lsystemnode2()
+{
+string $sel[] = `ls -sl`;
+string $obj1;
+string $obj2;
+if(size($sel)==2){
+$obj1=$sel[0];
+$obj2=$sel[1];
+instancer -n "lbranch2";
+createNode LSystemNode -n "Lnode2";
+connectAttr ($obj1+".matrix") lbranch2.inputHierarchy[0];
+connectAttr Lnode2.pt lbranch2.inputPoints;
+
+instancer -n "lflower2";
+connectAttr ($obj2+".matrix") lflower2.inputHierarchy[0];
+connectAttr Lnode2.f lflower2.inputPoints;}
+
+}
